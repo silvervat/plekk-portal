@@ -16,16 +16,9 @@ export default function MaterialCalculator({
   const [blankWidthMM, setBlankWidthMM] = useState(1250);
 
   const calculation: MaterialCalculation = useMemo(() => {
-    // Calculate how many pieces fit in one blank
     const maxPiecesPerBlank = Math.floor(blankLengthMM / drawingLengthMM);
-    
-    // Calculate how many blanks needed
     const blanksNeeded = Math.ceil(quantity / maxPiecesPerBlank);
-    
-    // Calculate total area in m²
     const totalAreaM2 = (blankLengthMM * blankWidthMM * blanksNeeded) / 1_000_000;
-    
-    // Calculate waste percentage
     const usedPieces = Math.min(quantity, maxPiecesPerBlank * blanksNeeded);
     const totalCapacity = maxPiecesPerBlank * blanksNeeded;
     const wastePercentage = totalCapacity > 0 
@@ -56,7 +49,6 @@ export default function MaterialCalculator({
         📐 Materjali kalkulaator
       </h3>
 
-      {/* Input fields */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -84,7 +76,6 @@ export default function MaterialCalculator({
         </div>
       </div>
 
-      {/* Quick presets */}
       <div className="mb-6">
         <p className="text-xs text-gray-600 mb-2">Kiirvalikud:</p>
         <div className="flex flex-wrap gap-2">
@@ -107,7 +98,6 @@ export default function MaterialCalculator({
         </div>
       </div>
 
-      {/* Results */}
       <div className="bg-white rounded-xl p-4 space-y-3 border border-blue-100">
         <div className="flex justify-between items-center pb-2 border-b">
           <span className="text-sm text-gray-600">Joonise pikkus:</span>
@@ -142,7 +132,6 @@ export default function MaterialCalculator({
         )}
       </div>
 
-      {/* Visual representation */}
       <div className="mt-4 p-3 bg-gray-50 rounded-lg">
         <p className="text-xs text-gray-600 mb-2">Visuaalne esitus:</p>
         <div className="flex flex-wrap gap-2">
