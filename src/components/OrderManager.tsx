@@ -23,7 +23,6 @@ export default function OrderManager({
   const [customerPhone, setCustomerPhone] = useState('');
   const [notes, setNotes] = useState('');
 
-  // Load orders from localStorage
   useEffect(() => {
     const stored = localStorage.getItem('plekk_orders');
     if (stored) {
@@ -35,7 +34,6 @@ export default function OrderManager({
     }
   }, []);
 
-  // Save orders to localStorage
   useEffect(() => {
     if (orders.length > 0) {
       localStorage.setItem('plekk_orders', JSON.stringify(orders));
@@ -73,7 +71,6 @@ export default function OrderManager({
       onCreateOrder(newOrder);
     }
 
-    // Reset form
     setShowCreateForm(false);
     setSelectedDrawings([]);
     setCustomerName('');
@@ -131,7 +128,6 @@ export default function OrderManager({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">📦 Tellimuste haldus</h2>
@@ -146,7 +142,6 @@ export default function OrderManager({
         </button>
       </div>
 
-      {/* Create Order Form Modal */}
       {showCreateForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -161,7 +156,6 @@ export default function OrderManager({
             </div>
 
             <div className="p-6 space-y-4">
-              {/* Customer Info */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Kliendi nimi *
@@ -202,7 +196,6 @@ export default function OrderManager({
                 </div>
               </div>
 
-              {/* Select Drawings */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Vali joonised * ({selectedDrawings.length} valitud)
@@ -242,7 +235,6 @@ export default function OrderManager({
                 </div>
               </div>
 
-              {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Märkused
@@ -256,7 +248,6 @@ export default function OrderManager({
                 />
               </div>
 
-              {/* Actions */}
               <div className="flex gap-3 pt-4 border-t">
                 <button
                   onClick={() => setShowCreateForm(false)}
@@ -277,7 +268,6 @@ export default function OrderManager({
         </div>
       )}
 
-      {/* Orders List */}
       <div className="space-y-4">
         {orders.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 text-center border">
@@ -295,7 +285,6 @@ export default function OrderManager({
         ) : (
           orders.map((order) => (
             <div key={order.id} className="bg-white rounded-2xl border shadow-sm hover:shadow-md transition">
-              {/* Order Header */}
               <div className="p-6 border-b">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -330,9 +319,7 @@ export default function OrderManager({
                 </div>
               </div>
 
-              {/* Order Body */}
               <div className="p-6">
-                {/* Drawings */}
                 <div className="mb-4">
                   <h4 className="text-sm font-bold text-gray-700 mb-3">Joonised ({order.drawings.length})</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -357,7 +344,6 @@ export default function OrderManager({
                   </div>
                 </div>
 
-                {/* Summary */}
                 <div className="grid grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg">
                   <div className="text-center">
                     <div className="text-xs text-gray-600 mb-1">Jooniseid</div>
@@ -377,7 +363,6 @@ export default function OrderManager({
                   </div>
                 </div>
 
-                {/* Notes */}
                 {order.notes && (
                   <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
                     <div className="text-xs font-bold text-amber-900 mb-1">Märkused:</div>
@@ -385,7 +370,6 @@ export default function OrderManager({
                   </div>
                 )}
 
-                {/* Status Change */}
                 <div className="mt-4 pt-4 border-t">
                   <label className="block text-xs font-bold text-gray-700 mb-2">Muuda staatust:</label>
                   <div className="flex flex-wrap gap-2">
