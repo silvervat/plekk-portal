@@ -578,14 +578,11 @@ export default function DrawingCanvas({ onSave, clientColor = '#2563eb' }: Drawi
                     const off = 28;
                     if (paintSide === "TOP") {
                       ay = minY - off;
-                    }
-                    if (paintSide === "BOTTOM") {
+                    } else if (paintSide === "BOTTOM") {
                       ay = maxY + off;
-                    }
-                    if (paintSide === "LEFT") {
+                    } else if (paintSide === "LEFT") {
                       ax = minX - off;
-                    }
-                    if (paintSide === "RIGHT") {
+                    } else if (paintSide === "RIGHT") {
                       ax = maxX + off;
                     }
                     const wr = wrap.getBoundingClientRect(),
@@ -602,27 +599,24 @@ export default function DrawingCanvas({ onSave, clientColor = '#2563eb' }: Drawi
                       maxY = Math.max(...ys);
                     const cx = (minX + maxX) / 2,
                       cy = (minY + maxY) / 2;
-                    let ax = cx,
-                      ay = cy,
-                      lx = cx,
-                      ly = cy;
+                    
                     const off = 28;
+                    let ax = cx, ay = cy, lx = cx, ly = cy;
+                    
                     if (paintSide === "TOP") {
                       ay = minY - off;
                       ly = minY;
-                    }
-                    if (paintSide === "BOTTOM") {
+                    } else if (paintSide === "BOTTOM") {
                       ay = maxY + off;
                       ly = maxY;
-                    }
-                    if (paintSide === "LEFT") {
+                    } else if (paintSide === "LEFT") {
                       ax = minX - off;
                       lx = minX;
-                    }
-                    if (paintSide === "RIGHT") {
+                    } else if (paintSide === "RIGHT") {
                       ax = maxX + off;
                       lx = maxX;
                     }
+                    
                     const w = 160,
                       h = 30,
                       r = 8;
