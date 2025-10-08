@@ -2,14 +2,18 @@ import { useState } from 'react'
 import { getCurrentClient } from './config/clients'
 import { getSession, saveSession } from './utils/storage'
 import DrawingCanvas from './components/DrawingCanvas'
-import { SheetDrawing } from './types'
+import MaterialCalculator from './components/MaterialCalculator'
+import OrderManager from './components/OrderManager'
+import { SheetDrawing, Order } from './types'
 import { exportDrawingsToPDF } from './utils/pdfExport'
+
+type View = 'home' | 'draw' | 'orders';
 
 function App() {
   const client = getCurrentClient()
   const [session] = useState(() => getSession())
   const [drawings, setDrawings] = useState<SheetDrawing[]>([])
-  const [view, setView] = useState<'home' | 'draw'>('home')
+  const [view, setView] = useState<View>('home')
   const [editingDrawing, setEditingDrawing] = useState<SheetDrawing | null>(null)
 
   // Kui pole sessiooni, loo demo sessioon
@@ -24,12 +28,10 @@ function App() {
 
   const handleSaveDrawing = (drawing: SheetDrawing) => {
     if (editingDrawing) {
-      // Uuenda olemasolevat joonist
       setDrawings(prev => prev.map(d => d.id === editingDrawing.id ? drawing : d))
       setEditingDrawing(null)
       alert('Joonis uuendatud! ✓')
     } else {
-      // Lisa uus joonis
       setDrawings(prev => [...prev, drawing])
       alert('Joonis salvestatud! ✓')
     }
@@ -54,13 +56,17 @@ function App() {
     ))
   }
 
-  // 📄 B) PDF Export
   const handleExportPDF = () => {
     if (drawings.length === 0) {
       alert('Pole jooniseid eksportimiseks!')
       return
     }
     exportDrawingsToPDF(drawings, client.name)
+  }
+
+  const handleCreateOrder = (order: Order) => {
+    console.log('Order created:', order)
+    alert(`✅ Tellimus ${order.orderNumber} loodud!`)
   }
 
   const totalQuantity = drawings.reduce((sum, d) => sum + d.quantity, 0)
@@ -95,13 +101,19 @@ function App() {
               🏠 Avaleht
             </button>
             <button 
-              onClick={() => { setView('draw'); setEditingDrawing(null); }}
+              onClick={() => setView('orders')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                view === 'draw' 
-                  ? 'text-white' 
-                  : 'text-white hover:opacity-90'
+                view === 'orders' 
+                  ? 'bg-gray-900 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
-              style={{ backgroundColor: view === 'draw' ? client.primaryColor : client.primaryColor + 'CC' }}
+            >
+              📦 Tellimused
+            </button>
+            <button 
+              onClick={() => { setView('draw'); setEditingDrawing(null); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors text-white hover:opacity-90`}
+              style={{ backgroundColor: client.primaryColor }}
             >
               + Uus joonis
             </button>
@@ -111,7 +123,7 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {view === 'home' ? (
+        {view === 'home' && (
           <div className="space-y-6">
             {/* Welcome Section */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border">
@@ -123,19 +135,27 @@ function App() {
                   <p className="text-gray-600 mb-4">
                     Siin saad joonistada plekke, määrata värve ja esitada tellimusi.
                   </p>
-                  <button 
-                    onClick={() => setView('draw')}
-                    className="px-6 py-3 rounded-xl text-white font-medium text-lg shadow-lg hover:shadow-xl transition-shadow"
-                    style={{ backgroundColor: client.primaryColor }}
-                  >
-                    🎨 Alusta joonistamist
-                  </button>
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={() => setView('draw')}
+                      className="px-6 py-3 rounded-xl text-white font-medium text-lg shadow-lg hover:shadow-xl transition-shadow"
+                      style={{ backgroundColor: client.primaryColor }}
+                    >
+                      🎨 Alusta joonistamist
+                    </button>
+                    <button 
+                      onClick={() => setView('orders')}
+                      className="px-6 py-3 rounded-xl bg-gray-900 text-white font-medium text-lg shadow-lg hover:shadow-xl transition-shadow"
+                    >
+                      📦 Vaata tellimusi
+                    </button>
+                  </div>
                 </div>
                 
                 {/* Statistika */}
                 {drawings.length > 0 && (
                   <div className="ml-8 bg-gray-50 rounded-xl p-6 min-w-[280px]">
-                    <h3 className="text-sm font-bold text-gray-700 mb-4 uppercase">Tellimuse kokkuvõte</h3>
+                    <h3 className="text-sm font-bold text-gray-700 mb-4 uppercase">Kokkuvõte</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600 text-sm">Jooniseid:</span>
@@ -162,6 +182,14 @@ function App() {
                 )}
               </div>
             </div>
+
+            {/* Material Calculator */}
+            {drawings.length > 0 && (
+              <MaterialCalculator
+                drawingLengthMM={drawings[0]?.totalLengthMM || 0}
+                quantity={totalQuantity}
+              />
+            )}
 
             {/* Saved Drawings */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border">
@@ -229,6 +257,12 @@ function App() {
                           <span>📐 Punkte:</span>
                           <b>{drawing.points.length}</b>
                         </div>
+                        {drawing.decorations.length > 0 && (
+                          <div className="flex justify-between">
+                            <span>🎨 Dekoratsioonid:</span>
+                            <b>{drawing.decorations.length}</b>
+                          </div>
+                        )}
                         <div className="flex justify-between">
                           <span>📅 Loodud:</span>
                           <b>{new Date(drawing.createdAt).toLocaleDateString('et-EE')}</b>
@@ -262,13 +296,17 @@ function App() {
                 <li>1. Vajuta <b>"Uus joonis"</b> nuppu</li>
                 <li>2. Joonista plekkide kuju sõrmega/hiirega</li>
                 <li>3. Süsteem sirgendab automaatselt</li>
-                <li>4. Määra värv, mõõdud ja kogus</li>
-                <li>5. Salvesta ja esita tellimusse</li>
-                <li>6. Ekspordi PDF, et saata tehasesse</li>
+                <li>4. Määra värv noolega (kliki pleki külge)</li>
+                <li>5. Muuda mõõte ja kogust</li>
+                <li>6. Lisa dekoratsioonid (tagasipööre/tugevuspaine)</li>
+                <li>7. Salvesta ja loo tellimus</li>
+                <li>8. Ekspordi PDF, et saata tehasesse</li>
               </ul>
             </div>
           </div>
-        ) : (
+        )}
+
+        {view === 'draw' && (
           <div className="bg-white rounded-2xl shadow-lg border overflow-hidden">
             <DrawingCanvas 
               onSave={handleSaveDrawing}
@@ -276,6 +314,15 @@ function App() {
               clientColor={client.primaryColor}
             />
           </div>
+        )}
+
+        {view === 'orders' && (
+          <OrderManager
+            clientName={client.name}
+            clientColor={client.primaryColor}
+            availableDrawings={drawings}
+            onCreateOrder={handleCreateOrder}
+          />
         )}
       </main>
 
