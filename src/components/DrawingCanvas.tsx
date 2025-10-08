@@ -591,10 +591,7 @@ export default function DrawingCanvas({ onSave, clientColor = '#2563eb' }: Drawi
                       maxY = Math.max(...ys);
                     const cx = (minX + maxX) / 2,
                       cy = (minY + maxY) / 2;
-                    let ax = cx,
-                      ay = cy,
-                      lx = cx,
-                      ly = cy;
+let ax = cx, ay = cy;
                     const off = 28;
                     if (paintSide === "TOP") {
                       ay = minY - off;
