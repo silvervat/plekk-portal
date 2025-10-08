@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Point, Decoration, SheetDrawing } from '../types';
+import React, { useMemo, useRef, useState } from "react";
+import { Point, SheetDrawing } from '../types';
 
 const toDeg = (rad: number) => (rad * 180) / Math.PI;
 const toRad = (deg: number) => (deg * Math.PI) / 180;
 const dist = (a: Point, b: Point) => Math.hypot(b.x - a.x, b.y - a.y);
-const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
 function angleBetween(a: Point, b: Point) {
   let d = toDeg(Math.atan2(b.y - a.y, b.x - a.x));
@@ -70,30 +69,10 @@ function snapPolyline(pts: Point[]): Point[] {
   return out;
 }
 
-function classifyAngle(deg: number): "H" | "V" | "D" {
-  const a = ((Math.round(deg) % 360) + 360) % 360;
-  if (a % 180 === 0) return "H";
-  if (a % 90 === 0) return "V";
-  return "D";
-}
-
 function normalizeProfile(pts: Point[]): Point[] {
   if (pts.length < 2) return pts;
-  let out = pts.map(p => ({ ...p }));
-  return out;
+  return pts.map(p => ({ ...p }));
 }
-
-const RR_COLORS: { code: string, name: string, hex: string }[] = [
-  { code: "RR23", name: "RR23 tumehall", hex: "#565B58" },
-  { code: "RR33", name: "RR33 must", hex: "#0B0B0B" },
-  { code: "RR29", name: "RR29 punane", hex: "#8D0E1A" },
-  { code: "RR37", name: "RR37 roheline", hex: "#395938" },
-];
-
-const RAL_MAP: Record<string, string> = {
-  "RAL7016": "#383E42",
-  "RAL9005": "#0A0A0A",
-};
 
 interface DrawingCanvasProps {
   onSave: (drawing: SheetDrawing) => void;
@@ -107,8 +86,8 @@ export default function DrawingCanvas({ onSave, clientColor = '#2563eb' }: Drawi
   const [isDrawing, setIsDrawing] = useState(false);
   const [points, setPoints] = useState<Point[]>([]);
   const [straightened, setStraightened] = useState(false);
-  const [paintColor, setPaintColor] = useState("#2f7d32");
-  const [paintLabel, setPaintLabel] = useState("RR23");
+  const paintColor = "#2f7d32";
+  const paintLabel = "RR23";
   const [mmPerPx] = useState(0.5);
   const tolerancePx = 10;
 
