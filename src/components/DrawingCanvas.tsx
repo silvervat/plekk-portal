@@ -1,14 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Point, Decoration, SheetDrawing } from '../types';
-
-/**
- * PLEKKIDE JOONISE DEMO — Mobiiliversioon
- *
- * – Kritseldus → sirgestus
- * – Lõigu pikkuse muutmine: nihutan kogu "saba" (dx,dy) → teised nurgad/pikkused ei muutu
- * – Värvimine: ühekordne suuna valik noolega; bänneril (tekst + värviproov) klikk = muutmine
- * – Endpoint kontekstimenüü: TAGASIPÖÖRE / TUGEVUSPAINE (punased märgid)
- */
 
 type Pt = Point;
 const toDeg = (rad: number) => (rad * 180) / Math.PI;
@@ -98,7 +89,6 @@ function normalizeProfile(pts: Pt[]): Pt[] {
   const equalizeThreshold = 0.5,
     epsY = 3;
 
-  // 1) silu horisontaalsed tasandid ühele Y-le
   const levels: { y: number; idxs: number[] }[] = [];
   for (let i = 0; i < out.length - 1; i++) {
     const a = out[i],
@@ -124,7 +114,6 @@ function normalizeProfile(pts: Pt[]): Pt[] {
     }
   }
 
-  // 2) lihtne tasandus H–D–H–D mustri korral
   for (let i = 0; i < out.length - 4; i++) {
     const A = out[i],
       B = out[i + 1],
@@ -148,7 +137,6 @@ function normalizeProfile(pts: Pt[]): Pt[] {
     }
   }
 
-  // 3) võrdsusta kõigi H- ja D-segmentide pikkused, kui erinevus ≤ 50%
   const segLen: number[] = [],
     segAng: number[] = [],
     segType: ("H" | "V" | "D")[] = [];
@@ -179,7 +167,6 @@ function normalizeProfile(pts: Pt[]): Pt[] {
     rebuilt.push(pointFromPolar(a, segLen[i], segAng[i]));
   }
 
-  // 4) teisene horisontaalide tasandus
   out = rebuilt;
   const levels2: { y: number; idxs: number[] }[] = [];
   for (let i = 0; i < out.length - 1; i++) {
@@ -228,7 +215,6 @@ export default function DrawingCanvas({ onSave, clientColor = '#2563eb' }: Drawi
   const [draftAng, setDraftAng] = useState("");
   const [angleEditEnabled, setAngleEditEnabled] = useState(false);
 
-  // Värvimine
   const [paintMode, setPaintMode] = useState(false);
   const [arrow, setArrow] = useState<{ start: Pt; end: Pt } | null>(null);
   const [paintPopover, setPaintPopover] = useState<{ x: number; y: number } | null>(null);
@@ -238,15 +224,12 @@ export default function DrawingCanvas({ onSave, clientColor = '#2563eb' }: Drawi
   const [paintBadge, setPaintBadge] = useState(false);
   const [paintLocked, setPaintLocked] = useState(false);
 
-  // Endpoint dekoratsioonid
   const [decors, setDecors] = useState<Decoration[]>([]);
   const [epMenu, setEpMenu] = useState<{ x: number; y: number; target: "start" | "end" } | null>(null);
   let longPressTimer: number | undefined = (undefined as any);
 
-  // Kogus
   const [quantity, setQuantity] = useState(1);
 
-  // RR palett
   const RR_COLORS: { code: string; name: string; hex: string }[] = [
     { code: "RR11", name: "RR11 okkaroheline", hex: "#114F38" },
     { code: "RR20", name: "RR20 valge", hex: "#EDEAE3" },
@@ -591,23 +574,19 @@ export default function DrawingCanvas({ onSave, clientColor = '#2563eb' }: Drawi
                       maxY = Math.max(...ys);
                     const cx = (minX + maxX) / 2,
                       cy = (minY + maxY) / 2;
-let ax = cx, ay = cy;
+                    let ax = cx, ay = cy;
                     const off = 28;
                     if (paintSide === "TOP") {
                       ay = minY - off;
-                      ly = minY;
                     }
                     if (paintSide === "BOTTOM") {
                       ay = maxY + off;
-                      ly = maxY;
                     }
                     if (paintSide === "LEFT") {
                       ax = minX - off;
-                      lx = minX;
                     }
                     if (paintSide === "RIGHT") {
                       ax = maxX + off;
-                      lx = maxX;
                     }
                     const wr = wrap.getBoundingClientRect(),
                       sr = svg.getBoundingClientRect();
