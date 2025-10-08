@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Order, SheetDrawing, OrderStatus } from '../types';
 import { exportDrawingsToPDF } from '../utils/pdfExport';
 
