@@ -23,6 +23,18 @@ export type SheetDrawing = {
   createdAt: string;
 };
 
+// Materjali kalkulatsioon
+export type MaterialCalculation = {
+  blankLengthMM: number;
+  blankWidthMM: number;
+  drawingLengthMM: number;
+  quantity: number;
+  maxPiecesPerBlank: number;
+  blanksNeeded: number;
+  totalAreaM2: number;
+  wastePercentage: number;
+};
+
 // Tellimuse staatus
 export type OrderStatus = 
   | 'DRAFT'
